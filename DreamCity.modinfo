@@ -19,6 +19,24 @@
   </ActionCriteria>
 
   <FrontEndActions>
+    <!-- 散装 .dds 必须 ImportFiles 才进得了虚拟文件系统；只写在 <Files> 里
+         是文件清单，不等于游戏能按 IconTextureAtlases.Filename 找到它。 -->
+    <ImportFiles id="DreamCity_FE_ImportIcons">
+      <Properties><LoadOrder>50</LoadOrder></Properties>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_22.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_30.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_32.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_36.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_44.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_45.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_48.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_50.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_64.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_80.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_128.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_200.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_256.dds</File>
+    </ImportFiles>
     <UpdateDatabase id="DreamCity_FE_Database">
       <Properties><LoadOrder>100</LoadOrder></Properties>
       <File>Data/DreamCity_Picker.sql</File>
@@ -39,6 +57,22 @@
   </FrontEndActions>
 
   <InGameActions>
+    <ImportFiles id="DreamCity_IG_ImportIcons">
+      <Properties><LoadOrder>50</LoadOrder></Properties>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_22.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_30.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_32.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_36.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_44.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_45.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_48.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_50.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_64.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_80.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_128.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_200.dds</File>
+      <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_256.dds</File>
+    </ImportFiles>
     <UpdateDatabase id="DreamCity_IG_Civilization">
       <Properties><LoadOrder>100</LoadOrder></Properties>
       <Criteria>Expansion2</Criteria>
@@ -77,8 +111,8 @@
       <zh_Hans_CN>来自网络小说《黎明之剑》、由上层叙事者看顾的文化城邦。</zh_Hans_CN>
     </Text>
     <Text id="LOC_TSOD_DREAM_CITY_MOD_DESCRIPTION">
-      <en_US>Adds Dream City, a cultural city-state from the online novel "The Sword of Dawn".[NEWLINE][NEWLINE]As its suzerain: [ICON_TechBoosted] Eurekas and [ICON_CivicBoosted] Inspirations provide 60 percent of the Technology or Civic instead of 50, and each district in your cities provides +1 [ICON_Amenities] Amenity.[NEWLINE][NEWLINE]Requires the Gathering Storm ruleset.</en_US>
-      <zh_Hans_CN>添加了来自网络小说《黎明之剑》的文化城邦「梦境之城」。[NEWLINE][NEWLINE]作为宗主国：[ICON_TechBoosted] 尤里卡和 [ICON_CivicBoosted] 鼓舞提供60%而非50%，且你的城市中每个区域+1 [ICON_Amenities] 宜居度。[NEWLINE][NEWLINE]需要《风云变幻》规则集。</zh_Hans_CN>
+      <en_US>Adds Dream City, a cultural city-state from the online novel "The Sword of Dawn".[NEWLINE][NEWLINE]As its suzerain: [ICON_TechBoosted] Eurekas and [ICON_CivicBoosted] Inspirations provide an additional 10% of technology and civic costs. Each district in your cities provides +1 [ICON_Amenities] Amenity.[NEWLINE][NEWLINE]Requires the Gathering Storm ruleset.</en_US>
+      <zh_Hans_CN>添加了来自网络小说《黎明之剑》的文化城邦「梦境之城」。[NEWLINE][NEWLINE]作为宗主国：[ICON_TechBoosted]尤里卡和 [ICON_CivicBoosted]鼓舞额外提供10%的科技与市政开销。你的城市中每个区域+1 [ICON_Amenities] 宜居度。[NEWLINE][NEWLINE]需要《风云变幻》规则集。</zh_Hans_CN>
     </Text>
   </LocalizedText>
 

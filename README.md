@@ -9,7 +9,7 @@
 
 作为宗主国：
 
-- [ICON_TechBoosted] 尤里卡和 [ICON_CivicBoosted] 鼓舞提供 60% 的科技与市政，而非 50%
+- [ICON_TechBoosted] 尤里卡和 [ICON_CivicBoosted] 鼓舞额外提供 10% 的科技与市政开销
 - 你的城市中每个区域 +1 [ICON_Amenities] 宜居度
 
 1/3/6 使者的加成走原版文化城邦那一套（`LEADER_MINOR_CIV_CULTURAL` 继承而来），
@@ -30,14 +30,19 @@
 城市  --MODIFIER_CITY_DISTRICTS_ADJUST_DISTRICT_AMENITY-->  每个区域 +1
 ```
 
-尤里卡/鼓舞那两条直接抄中国的朝代更替（`TRAIT_CIVILIZATION_DYNASTIC_CYCLE`），
-`Amount` 是额外的百分点，官方填的就是 10。
+尤里卡/鼓舞那两条的 modifier 抄本体的三处用例（中国的朝代更替、巴比伦、
+时代纪念「自由探索」/「百花齐放」），`Amount` 是额外的百分点，官方填的就是 10。
+描述文本照抄「自由探索」黄金时代的官方措辞：只说额外 10%，不提基数是多少。
 
 用到的 modifier 类型全部是官方已定义的 DynamicModifier，本 mod 一个都没新建。
 
 **图标走「直接 DDS」路线**：不打 XLP、不需要 SDK。
 `tools/make_icon.py` 画蜘蛛并直接写出 13 个尺寸的未压缩 32 位 RGBA `.dds`，
 DDS 头逐字段照抄已在游戏里验证可用的图标。
+
+散装 `.dds` **必须走 `ImportFiles` action** 才进得了游戏的虚拟文件系统；
+只写在 `<Files>` 里那是文件清单，不等于 `IconTextureAtlases.Filename` 找得到它。
+前端和游戏内两边都要写（开局界面属于前端）。
 
 ## 目录
 
