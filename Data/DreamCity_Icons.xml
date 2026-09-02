@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 梦境之城 —— 图标登记 -->
+<!--
+    13 个尺寸是「文明」这一类的完整规格（skill 的 icon_spec.py，源自官方 488 个图集）。
+    少出一个尺寸，用到该尺寸的界面就是一块空白，且不会有任何报错。
+
+    走的是「直接 DDS」路线：不打 XLP、不需要 SDK。Filename 只写文件名，
+    实际文件放在 Textures/ 子目录并在 .modinfo 的 <Files> 里登记即可
+    （工坊 mod 1312585482 / 1752329484 都是这么做的）。
+-->
+<GameData>
+    <IconTextureAtlases>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="22" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_22.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="30" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_30.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="32" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_32.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="36" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_36.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="44" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_44.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="45" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_45.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="48" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_48.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="50" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_50.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="64" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_64.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="80" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_80.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="128" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_128.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="200" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_200.dds"/>
+        <Row Name="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" IconSize="256" IconsPerRow="1" IconsPerColumn="1" Filename="ICON_CIVILIZATION_TSOD_DREAM_CITY_256.dds"/>
+    </IconTextureAtlases>
+    <IconDefinitions>
+        <Row Name="ICON_CIVILIZATION_TSOD_DREAM_CITY" Atlas="ATLAS_CIVILIZATION_TSOD_DREAM_CITY" Index="0"/>
+    </IconDefinitions>
+</GameData>
