@@ -1,4 +1,5 @@
--- 复用官方文化城邦的配色，跟原版文化城邦在小地图和外交界面上完全一致。
+-- 娱乐是本 mod 新增的类别，官方没有 COLOR_PLAYER_CITY_STATE_ENTERTAINMENT_*，
+-- 这里按约定复用文化城邦那一套配色，不另外定义颜色。
 INSERT OR REPLACE INTO PlayerColors (Type, Usage, PrimaryColor, SecondaryColor) VALUES
     ('CIVILIZATION_TSOD_DREAM_CITY', 'Minor',
      'COLOR_PLAYER_CITY_STATE_PRIMARY',

@@ -23,9 +23,9 @@ VALUES
      1);
 
 
--- 城邦类别。决定使者加成走哪一套、地图上用哪个类别图标。
+-- 城邦类别。本 mod 新增的 ENTERTAINMENT 见 DreamCity_CityStateCategory.sql。
 INSERT OR REPLACE INTO TypeProperties (Type, Name, Value) VALUES
-    ('CIVILIZATION_TSOD_DREAM_CITY', 'CityStateCategory', 'CULTURAL');
+    ('CIVILIZATION_TSOD_DREAM_CITY', 'CityStateCategory', 'ENTERTAINMENT');
 
 
 INSERT OR REPLACE INTO CivilizationLeaders (CivilizationType, LeaderType, CapitalName) VALUES
@@ -38,11 +38,11 @@ INSERT OR REPLACE INTO CityNames (CivilizationType, CityName) VALUES
 
 -- Name 用城邦名而不是「上层叙事者」：原版 31 个城邦领袖无一例外都这么写，
 -- 界面上出现的也是城邦名。上层叙事者的名字放在能力描述里。
--- InheritFrom 带来文化城邦的 1/3/6 使者加成，本 mod 只需再写宗主国独有能力。
+-- InheritFrom 带来娱乐城邦的 1/3/6 使者加成，本 mod 只需再写宗主国独有能力。
 INSERT OR REPLACE INTO Leaders (LeaderType, Name, InheritFrom) VALUES
     ('LEADER_MINOR_CIV_TSOD_DREAM_CITY',
      'LOC_CIVILIZATION_TSOD_DREAM_CITY_NAME',
-     'LEADER_MINOR_CIV_CULTURAL');
+     'LEADER_MINOR_CIV_ENTERTAINMENT');
 
 
 INSERT OR REPLACE INTO LeaderTraits (LeaderType, TraitType) VALUES

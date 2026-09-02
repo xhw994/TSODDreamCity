@@ -73,6 +73,12 @@
       <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_200.dds</File>
       <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_256.dds</File>
     </ImportFiles>
+    <!-- 类别定义必须排在城邦骨架之前：城邦领袖的 InheritFrom 指向类别领袖。 -->
+    <UpdateDatabase id="DreamCity_IG_CityStateCategory">
+      <Properties><LoadOrder>90</LoadOrder></Properties>
+      <Criteria>Expansion2</Criteria>
+      <File>Data/DreamCity_CityStateCategory.sql</File>
+    </UpdateDatabase>
     <UpdateDatabase id="DreamCity_IG_Civilization">
       <Properties><LoadOrder>100</LoadOrder></Properties>
       <Criteria>Expansion2</Criteria>
@@ -99,6 +105,22 @@
       <Criteria>Expansion2</Criteria>
       <File>Text/DreamCity_Text.sql</File>
     </UpdateText>
+    <!-- 官方 CityStates.lua 把六个类别硬编码了，新类别落到 else 会 DataError。
+         按社区约定：ReplaceUIScript 配一个同 LoadOrder 的 ImportFiles，
+         这样后来的 mod 能 include 本文件接力，而不是把我们顶掉。 -->
+    <ImportFiles id="DreamCity_IG_ImportUI">
+      <Properties><LoadOrder>100000</LoadOrder></Properties>
+      <Criteria>Expansion2</Criteria>
+      <File>UI/CityStates_TSODDreamCity.lua</File>
+    </ImportFiles>
+    <ReplaceUIScript id="DreamCity_IG_CityStatesPanel">
+      <Properties>
+        <LoadOrder>100000</LoadOrder>
+        <LuaContext>CityStates</LuaContext>
+        <LuaReplace>UI/CityStates_TSODDreamCity.lua</LuaReplace>
+      </Properties>
+      <Criteria>Expansion2</Criteria>
+    </ReplaceUIScript>
   </InGameActions>
 
   <LocalizedText>
@@ -137,5 +159,7 @@
     <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_128.dds</File>
     <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_200.dds</File>
     <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_256.dds</File>
+    <File>UI/CityStates_TSODDreamCity.lua</File>
+    <File>Data/DreamCity_CityStateCategory.sql</File>
   </Files>
 </Mod>
