@@ -70,9 +70,20 @@ function GetTypeAtlasPieces(kCityState, size) ... end
 在数据库里却是 `"CULTURAL"`），而是反过来：**凡是官方六种之外的类型一律当成
 本 mod 的娱乐城邦**。本 mod 只引入一个新类别，这样既安全又不受映射规则影响。
 
-关键的一环是 `GetCityStateType()`：它逐个比对六个 `LEADER_MINOR_CIV_*`，
-我们的城邦一个都匹配不上，返回**空串**，后面所有查表都从这里开始崩。先补它，
-再补四个查表函数。
+官方 `PartialScreens/CityStates.lua` 里按六个 `LEADER_MINOR_CIV_*` 硬编码的分支
+一共**六处**，逐个覆盖：
+
+| 函数 | 不覆盖会怎样 |
+|---|---|
+| `GetCityStateType()` | 映射不上返回**空串**，下游全部从这里开始崩 |
+| `GetTypeAtlasPieces()` | 类别图标空白 |
+| `GetBonusIconAtlasPieces()` | 使者奖励图标空白 |
+| `GetTypeTooltip()` | 类别 tooltip 空 |
+| `GetTypeName()` | 显示成 `unknownType'X'` |
+| `GetBonusText()` | 「派遣 N 位使者：」后面**半句都没有** |
+
+最后一条和文明百科页无关 —— 百科读的是 `Traits.Description`，所以百科里三档
+说明是全的，而面板 tooltip 是空的。两条路，得分别喂。
 
 **不让 `GetCityStateType` 返回 `"ENTERTAINMENT"`** —— 那个字符串会流进别的 UI
 mod，而它们同样按六个类别硬编码。实测 Better City States 的 CUI 列表里有
@@ -124,6 +135,13 @@ RequirementSet（官方只有 `..._INDUSTRIAL_ZONE_OR_ENTERTAINMENT_COMPLEX`）�
 「派遣 N 位使者：」后面那半句走 `ModifierStrings` 的 `Preview` 上下文。
 官方六个类别的说明是引擎内置的、不经这张表，新加的类别必须自己写，
 否则 tooltip 里只剩前半句。CIVITAS City-States 也是这么补的。
+
+### 文明百科的分组
+
+侧边栏的分组来自 `CivilopediaPageGroups`，`PageGroupId` 与 `TypeProperties` 里的
+`CityStateCategory` **同名**。官方六个组就叫 `CULTURAL` / `SCIENTIFIC` / …，
+印尼场景的海事城邦也是照这个加了一行 `PageGroupId="MARITIME"`。
+不加的话页面无处可归，会裸露在所有分组外面。一行 SQL，不用碰 Lua。
 
 ### 配色
 

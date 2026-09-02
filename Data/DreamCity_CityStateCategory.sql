@@ -145,3 +145,13 @@ INSERT OR REPLACE INTO ModifierStrings (ModifierId, Context, Text) VALUES
      'LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS'),
     ('MINOR_CIV_ENTERTAINMENT_LARGE_INFLUENCE_BONUS_TIER3', 'Preview',
      'LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS_TIER3');
+
+
+-- 文明百科侧边栏的分组。组名与 TypeProperties 里的 CityStateCategory 同名，
+-- 官方六个组就是 CULTURAL / SCIENTIFIC / ... ，印尼场景的海事城邦也是照这个
+-- 加了一行 PageGroupId="MARITIME"。不加的话页面无处可归，会裸露在分组外面。
+INSERT OR REPLACE INTO CivilopediaPageGroups
+    (SectionID, PageGroupId, Name, VisibleIfEmpty, SortIndex)
+VALUES
+    ('CITYSTATES', 'ENTERTAINMENT',
+     'LOC_PEDIA_CITYSTATES_PAGEGROUP_ENTERTAINMENT_NAME', 0, 10);

@@ -1,27 +1,30 @@
 -- ===========================================================================
---  城邦面板：让新增的娱乐城邦类别有图标、类别名和 tooltip
+--  城邦面板：让新增的娱乐城邦类别有类别图标、类别名和三档使者说明
 --
---  背景：官方 PartialScreens/CityStates.lua 用 GetCityStateType() 把领袖映射成
---  六个类别字符串之一，匹配不上就返回空串；后面四条 if-elseif 链拿这个字符串
---  查图标 / 名字 / tooltip，落到 else 会 UI.DataError。CivilopediaPage_CityState.lua
---  里官方自己留了注释 "Should be database-driven, but presently is not."。
+--  官方 PartialScreens/CityStates.lua 里有五处按六个 LEADER_MINOR_CIV_* 硬编码
+--  的分支，新类别一个都匹配不上：
+--      GetCityStateType()          映射不上 -> 返回空串，下游全部从这里开始崩
+--      GetTypeAtlasPieces()        类别图标
+--      GetBonusIconAtlasPieces()   使者奖励图标
+--      GetTypeTooltip()            类别 tooltip
+--      GetTypeName()               类别名
+--      GetBonusText()              「派遣 N 位使者：」后面那半句
+--  官方在 CivilopediaPage_CityState.lua 里自己留了注释
+--  "Should be database-driven, but presently is not."，海事城邦就是靠在那张表里
+--  加一行 KLUDGE 塞进去的——新增类别目前只能照办。
 --
 --  ---------------------------------------------------------------------------
---  为什么不让 GetCityStateType 返回 "ENTERTAINMENT"
+--  为什么 GetCityStateType 对外报 "CULTURE" 而不是 "ENTERTAINMENT"
 --  ---------------------------------------------------------------------------
---  因为那个字符串会流进别的 UI mod，而它们同样按六个类别硬编码。实测
---  Better City States 的 CUI 列表里有：
+--  那个字符串会流进别的 UI mod，而它们同样按六个类别硬编码。实测
+--  Better City States 的 CUI 列表里有
 --      cui_SuzerainList[kCityState.Type].color = ...
---  那张表是函数内的 local，只有六个官方键，遇到第七个类别就
---  "attempt to index a nil value"，整个城邦面板白屏。外部改不到那张表。
+--  那张表是函数内的 local、只有六个官方键，遇到第七个值就
+--  "attempt to index a nil value"，整个城邦面板白屏，且外部够不到那张表。
 --
---  所以反过来做：**对外仍然报一个官方类别**（文化），谁都不会崩；
---  **我们自己识别城邦靠身份而不是靠这个字符串** —— kCityState.CivType 一路
---  都在（官方和 BST 的表里都有），顺着它查这个城邦的领袖 InheritFrom 是不是
---  LEADER_MINOR_CIV_ENTERTAINMENT 即可。这样图标、类别名、tooltip 还是娱乐的，
---  而任何按 Type 查表的第三方代码看到的都是它认识的 "CULTURE"。
---
---  代价：BST 那类按 Type 分组的列表会把娱乐城邦并进文化组。可以接受。
+--  所以反过来：**对外仍报一个官方类别，自己识别城邦靠身份**。
+--  kCityState.CivType（官方和 BST 的表里都有）顺着查领袖 InheritFrom 即可。
+--  代价只有一个：按 Type 排序/分组的地方会把娱乐城邦并进文化组。
 --
 --  ---------------------------------------------------------------------------
 --  按社区约定写成「include 原文件 + 重定义」，并配同 LoadOrder 的 ImportFiles，
@@ -34,8 +37,7 @@ pcall(function() include("CityStates_BST_XP1.lua") end)
 pcall(function() include("CityStates_BST_XP2.lua") end)
 
 
--- 对外伪装成哪个官方类别。六个官方值之一，别填 "ENTERTAINMENT"，
--- 那会让按类别硬编码的第三方 UI 崩掉（见上）。
+-- 对外伪装成哪个官方类别。必须是六个官方值之一。
 local TSOD_MASQUERADE_AS :string = "CULTURE";
 
 -- 娱乐类别暂时复用文化类的图标资源；换成专属图标时只改这两行。
@@ -45,21 +47,45 @@ local ENTERTAINMENT_NAME       :string = "LOC_CITY_STATES_TYPE_ENTERTAINMENT";
 
 local TSOD_CATEGORY_LEADER :string = "LEADER_MINOR_CIV_ENTERTAINMENT";
 
+-- 三档说明。官方那三个门槛常量在原文件里是 local，include 拿不到，
+-- 只能按传进来的数字判；官方从来只用 1 / 3 / 6 这三个值。
+-- 6 使者那档挂了两条 modifier，所以是两句拼起来。
+local TSOD_TIER_TEXT :table = {
+    [1] = { "LOC_MINOR_CIV_SMALL_INFLUENCE_ENVOYS",
+            { "LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_SMALL_INFLUENCE_BONUS" } },
+    [3] = { "LOC_MINOR_CIV_MEDIUM_INFLUENCE_ENVOYS",
+            { "LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_MEDIUM_INFLUENCE_BONUS" } },
+    [6] = { "LOC_MINOR_CIV_LARGE_INFLUENCE_ENVOYS",
+            { "LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS",
+              "LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS_TIER3" } },
+};
+
 
 -- ---------------------------------------------------------------------------
---  哪些城邦属于娱乐类别 —— 开局算一次就够，数据库里不会再变。
---  按 InheritFrom 判定而不是写死城邦名，以后往这个类别里加城邦不用动这里。
+--  身份判定。按 InheritFrom 判而不是写死城邦名，
+--  以后往这个类别里加城邦不用动 Lua。
 -- ---------------------------------------------------------------------------
+local function IsEntertainmentLeader( sLeader:string )
+    if sLeader == nil then return false; end
+    if sLeader == TSOD_CATEGORY_LEADER then return true; end
+    local kLeader :table = GameInfo.Leaders[sLeader];
+    return kLeader ~= nil and kLeader.InheritFrom == TSOD_CATEGORY_LEADER;
+end
+
+local function IsEntertainmentPlayer( playerID:number )
+    local pConfig = PlayerConfigurations[playerID];
+    if pConfig == nil then return false; end
+    return IsEntertainmentLeader(pConfig:GetLeaderTypeName());
+end
+
+--  哪些城邦属于娱乐类别 —— 开局算一次就够，数据库里不会再变。
 local m_kEntertainmentCivs :table = nil;
 
 local function GetEntertainmentCivs()
     if m_kEntertainmentCivs ~= nil then return m_kEntertainmentCivs; end
     m_kEntertainmentCivs = {};
     for kRow in GameInfo.CivilizationLeaders() do
-        local kLeader :table = GameInfo.Leaders[kRow.LeaderType];
-        if kLeader ~= nil
-           and (kRow.LeaderType == TSOD_CATEGORY_LEADER
-                or kLeader.InheritFrom == TSOD_CATEGORY_LEADER) then
+        if IsEntertainmentLeader(kRow.LeaderType) then
             m_kEntertainmentCivs[kRow.CivilizationType] = true;
         end
     end
@@ -73,24 +99,35 @@ end
 
 
 -- 官方的映射对我们的领袖会落空，返回空串，后面所有查表都从这里开始崩。
--- 补成一个官方类别，别的 mod 才不会被第七个字符串噎住。
 BASE_TSOD_GetCityStateType = GetCityStateType;
 function GetCityStateType( playerID:number )
     local sType :string = BASE_TSOD_GetCityStateType(playerID);
     if sType ~= nil and sType ~= "" and sType ~= "unknown" then
         return sType;
     end
-
-    local pConfig = PlayerConfigurations[playerID];
-    if pConfig == nil then return sType; end
-    local sLeader :string = pConfig:GetLeaderTypeName();
-    local kLeader :table  = GameInfo.Leaders[sLeader];
-    if kLeader ~= nil
-       and (sLeader == TSOD_CATEGORY_LEADER
-            or kLeader.InheritFrom == TSOD_CATEGORY_LEADER) then
+    if IsEntertainmentPlayer(playerID) then
         return TSOD_MASQUERADE_AS;
     end
     return sType;
+end
+
+
+-- 「派遣 N 位使者：」后面那半句。官方这里同样是六选一，落空就是空字符串，
+-- 表现为 tooltip 只剩前半句。这一条和百科页无关——百科读的是 Traits.Description。
+BASE_TSOD_GetBonusText = GetBonusText;
+function GetBonusText( playerID:number, envoyTokenNum:number )
+    if IsEntertainmentPlayer(playerID) then
+        local kTier :table = TSOD_TIER_TEXT[envoyTokenNum];
+        if kTier ~= nil then
+            local sDetails :string = "";
+            for _, sTag in ipairs(kTier[2]) do
+                if sDetails ~= "" then sDetails = sDetails .. " "; end
+                sDetails = sDetails .. Locale.Lookup(sTag);
+            end
+            return Locale.Lookup(kTier[1]), sDetails;
+        end
+    end
+    return BASE_TSOD_GetBonusText(playerID, envoyTokenNum);
 end
 
 
