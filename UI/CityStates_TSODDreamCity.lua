@@ -1,17 +1,32 @@
 -- ===========================================================================
---  城邦面板：让新增的娱乐城邦类别有类型、图标、名字和 tooltip
+--  城邦面板：让新增的娱乐城邦类别有图标、类别名和 tooltip
 --
---  官方 PartialScreens/CityStates.lua 用 GetCityStateType() 把领袖映射成六个
---  类别字符串之一，映射不上就返回**空串**；后面四条 if-elseif 链再拿这个字符串
---  查图标 / tooltip，落到 else 会 UI.DataError。所以新类别要先把 Type 补上，
---  再补那四个查表函数。CivilopediaPage_CityState.lua 里官方自己留了注释
---  "Should be database-driven, but presently is not."，海事城邦就是靠在那张表
---  里加一行 KLUDGE 塞进去的——新增类别目前只能照办。
+--  背景：官方 PartialScreens/CityStates.lua 用 GetCityStateType() 把领袖映射成
+--  六个类别字符串之一，匹配不上就返回空串；后面四条 if-elseif 链拿这个字符串
+--  查图标 / 名字 / tooltip，落到 else 会 UI.DataError。CivilopediaPage_CityState.lua
+--  里官方自己留了注释 "Should be database-driven, but presently is not."。
 --
---  按社区约定写成「include 原文件 + 重定义」而不是整文件重写，并配一个同
---  LoadOrder 的 ImportFiles，好让后来的 mod 能 include 本文件继续接力。
---  下面把 Better City States 的两个资料片文件也 include 进来，装了它的话
---  这条链才完整（include 不存在的文件不报错，没装也无妨）。
+--  ---------------------------------------------------------------------------
+--  为什么不让 GetCityStateType 返回 "ENTERTAINMENT"
+--  ---------------------------------------------------------------------------
+--  因为那个字符串会流进别的 UI mod，而它们同样按六个类别硬编码。实测
+--  Better City States 的 CUI 列表里有：
+--      cui_SuzerainList[kCityState.Type].color = ...
+--  那张表是函数内的 local，只有六个官方键，遇到第七个类别就
+--  "attempt to index a nil value"，整个城邦面板白屏。外部改不到那张表。
+--
+--  所以反过来做：**对外仍然报一个官方类别**（文化），谁都不会崩；
+--  **我们自己识别城邦靠身份而不是靠这个字符串** —— kCityState.CivType 一路
+--  都在（官方和 BST 的表里都有），顺着它查这个城邦的领袖 InheritFrom 是不是
+--  LEADER_MINOR_CIV_ENTERTAINMENT 即可。这样图标、类别名、tooltip 还是娱乐的，
+--  而任何按 Type 查表的第三方代码看到的都是它认识的 "CULTURE"。
+--
+--  代价：BST 那类按 Type 分组的列表会把娱乐城邦并进文化组。可以接受。
+--
+--  ---------------------------------------------------------------------------
+--  按社区约定写成「include 原文件 + 重定义」，并配同 LoadOrder 的 ImportFiles，
+--  好让后来的 mod 能 include 本文件继续接力。下面也 include 了 Better City
+--  States 的两个资料片文件，装了它这条链才完整（include 不存在的文件不报错）。
 -- ===========================================================================
 
 include("CityStates.lua")
@@ -19,48 +34,46 @@ pcall(function() include("CityStates_BST_XP1.lua") end)
 pcall(function() include("CityStates_BST_XP2.lua") end)
 
 
--- ---------------------------------------------------------------------------
---  兼容开关
---
---  "ENTERTAINMENT" —— 娱乐城邦作为独立类别显示（默认）。
---  "CULTURE"       —— 对 UI 伪装成文化城邦：图标、颜色、类别名都变回文化，
---                     加成不受影响（加成来自 trait，不看这个字符串）。
---
---  什么时候要改成 "CULTURE"：装了会按类别字符串查自己表的城邦 UI mod。
---  已知 Better City States 的 CUI 列表就是这种写法——
---      cui_SuzerainList[kCityState.Type].color = ...
---  它那张表是函数内的 local，只有六个官方键，遇到第七个类别会
---  "attempt to index a nil value"，整个城邦面板白屏。那张表从外部改不了，
---  除非把它整个函数重写，所以这里留一个开关，一行就能退回全兼容模式。
--- ---------------------------------------------------------------------------
-local TSOD_ENTERTAINMENT_TYPE :string = "ENTERTAINMENT";
+-- 对外伪装成哪个官方类别。六个官方值之一，别填 "ENTERTAINMENT"，
+-- 那会让按类别硬编码的第三方 UI 崩掉（见上）。
+local TSOD_MASQUERADE_AS :string = "CULTURE";
 
 -- 娱乐类别暂时复用文化类的图标资源；换成专属图标时只改这两行。
 local ENTERTAINMENT_TYPE_ICON  :string = "ICON_CITYSTATE_CULTURE";
 local ENTERTAINMENT_BONUS_ICON :string = "ICON_ENVOY_BONUS_CULTURE";
 local ENTERTAINMENT_NAME       :string = "LOC_CITY_STATES_TYPE_ENTERTAINMENT";
 
-local KNOWN_TYPES :table = {
-    SCIENTIFIC   = true,
-    RELIGIOUS    = true,
-    TRADE        = true,
-    CULTURE      = true,
-    MILITARISTIC = true,
-    INDUSTRIAL   = true,
-};
+local TSOD_CATEGORY_LEADER :string = "LEADER_MINOR_CIV_ENTERTAINMENT";
+
+
+-- ---------------------------------------------------------------------------
+--  哪些城邦属于娱乐类别 —— 开局算一次就够，数据库里不会再变。
+--  按 InheritFrom 判定而不是写死城邦名，以后往这个类别里加城邦不用动这里。
+-- ---------------------------------------------------------------------------
+local m_kEntertainmentCivs :table = nil;
+
+local function GetEntertainmentCivs()
+    if m_kEntertainmentCivs ~= nil then return m_kEntertainmentCivs; end
+    m_kEntertainmentCivs = {};
+    for kRow in GameInfo.CivilizationLeaders() do
+        local kLeader :table = GameInfo.Leaders[kRow.LeaderType];
+        if kLeader ~= nil
+           and (kRow.LeaderType == TSOD_CATEGORY_LEADER
+                or kLeader.InheritFrom == TSOD_CATEGORY_LEADER) then
+            m_kEntertainmentCivs[kRow.CivilizationType] = true;
+        end
+    end
+    return m_kEntertainmentCivs;
+end
 
 local function IsEntertainment( kCityState:table )
-    return kCityState ~= nil
-       and kCityState.Type ~= nil
-       and KNOWN_TYPES[kCityState.Type] == nil;
+    if kCityState == nil or kCityState.CivType == nil then return false; end
+    return GetEntertainmentCivs()[kCityState.CivType] == true;
 end
 
 
--- ---------------------------------------------------------------------------
---  官方 GetCityStateType 逐个比对六个 LEADER_MINOR_CIV_*，我们的城邦
---  InheritFrom 的是 LEADER_MINOR_CIV_ENTERTAINMENT，一个都匹配不上，
---  于是返回空串——后面所有查表都从这里开始崩。先把它补上。
--- ---------------------------------------------------------------------------
+-- 官方的映射对我们的领袖会落空，返回空串，后面所有查表都从这里开始崩。
+-- 补成一个官方类别，别的 mod 才不会被第七个字符串噎住。
 BASE_TSOD_GetCityStateType = GetCityStateType;
 function GetCityStateType( playerID:number )
     local sType :string = BASE_TSOD_GetCityStateType(playerID);
@@ -73,9 +86,9 @@ function GetCityStateType( playerID:number )
     local sLeader :string = pConfig:GetLeaderTypeName();
     local kLeader :table  = GameInfo.Leaders[sLeader];
     if kLeader ~= nil
-       and (sLeader == "LEADER_MINOR_CIV_ENTERTAINMENT"
-            or kLeader.InheritFrom == "LEADER_MINOR_CIV_ENTERTAINMENT") then
-        return TSOD_ENTERTAINMENT_TYPE;
+       and (sLeader == TSOD_CATEGORY_LEADER
+            or kLeader.InheritFrom == TSOD_CATEGORY_LEADER) then
+        return TSOD_MASQUERADE_AS;
     end
     return sType;
 end

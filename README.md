@@ -74,24 +74,22 @@ function GetTypeAtlasPieces(kCityState, size) ... end
 我们的城邦一个都匹配不上，返回**空串**，后面所有查表都从这里开始崩。先补它，
 再补四个查表函数。
 
-> **已知限制 / 与 Better City States 冲突**：装了 Better City States 时，
-> 它的 CUI 城邦列表里有这么一行——
-> `cui_SuzerainList[kCityState.Type].color = ...`，那张表是函数内的 local，
-> 只有六个官方键，遇到第七个类别会 `attempt to index a nil value`，
-> **整个城邦面板白屏**。表在外部改不到，除非把它那个函数整个重写。
-> 所以 `UI/CityStates_TSODDreamCity.lua` 顶部留了一个开关：
-> 把 `TSOD_ENTERTAINMENT_TYPE` 改成 `"CULTURE"`，娱乐城邦对 UI 伪装成文化城邦，
-> 图标颜色类别名都变回文化，但**加成不受影响**（加成来自 trait，不看这个字符串）。
-> 这是目前唯一能同时开着 BST 又不白屏的办法。
->
-> 与其它替换 `CityStates` 这个 LuaContext 的 mod 同开时，LoadOrder 大的那个赢。
+**不让 `GetCityStateType` 返回 `"ENTERTAINMENT"`** —— 那个字符串会流进别的 UI
+mod，而它们同样按六个类别硬编码。实测 Better City States 的 CUI 列表里有
+`cui_SuzerainList[kCityState.Type].color = ...`，那张表是函数内的 local、只有六个
+官方键，遇到第七个类别就 `attempt to index a nil value`，整个城邦面板白屏，
+而且从外部够不到那张表。
+
+所以反过来做：**对外仍报一个官方类别（文化），我们自己识别城邦靠身份**。
+`kCityState.CivType` 一路都在（官方和 BST 的表里都有），顺着它查这个城邦的领袖
+`InheritFrom` 是不是 `LEADER_MINOR_CIV_ENTERTAINMENT` 就行。这样图标、类别名、
+tooltip 还是娱乐的，而任何按 `Type` 查表的第三方代码看到的都是它认识的 `"CULTURE"`。
+判定按 `InheritFrom` 而不是写死城邦名，以后往这个类别里加城邦不用改 Lua。
+
+> **代价**：BST 那类按 `Type` 分组的列表会把娱乐城邦并进文化组。
+> 与其它替换 `CityStates` 这个 LuaContext 的 mod 同开时，LoadOrder 大的那个赢；
 > 本 mod 用了 100000 并配了 `ImportFiles`，也 include 了 BST 的两个资料片文件，
 > 对方若也按约定写就能接力。
-> 另外 CIVITAS City-States 自己也做了一个娱乐城邦类别
-> （`MINOR_CIV_CSE_ENTERTAINMENT_TRAIT`），和本 mod 的是两个互不相干的类别，
-> 同开时会并存。
-> 文明百科页里的类别图标还没接——那张表是函数内的局部变量，覆盖不了，
-> 只能整文件替换，暂不做。
 
 ### 宗主国能力
 
