@@ -32,7 +32,12 @@ INSERT OR REPLACE INTO LocalizedText (Tag, Language, Text) VALUES
     ('LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_SMALL_INFLUENCE_BONUS', 'zh_Hans_CN', '[ICON_Capital] 首都+1 [ICON_Amenities] 宜居度。'),
     ('LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_MEDIUM_INFLUENCE_BONUS', 'en_US', '+1 [ICON_Amenities] Amenity in each city with an Arena or Ferris Wheel.'),
     ('LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_MEDIUM_INFLUENCE_BONUS', 'zh_Hans_CN', '拥有竞技场或摩天轮的城市+1 [ICON_Amenities] 宜居度。'),
-    ('LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS', 'en_US', '+1 [ICON_Amenities] Amenity in each city with a Zoo or Aquarium, and another +1 in each city with a Stadium or Aquatics Center.'),
-    ('LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS', 'zh_Hans_CN', '拥有动物园或水族馆的城市+1 [ICON_Amenities] 宜居度；拥有体育场或水上运动中心的城市再+1。'),
+    ('LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS', 'en_US', '+1 [ICON_Amenities] Amenity in each city with a Zoo or Aquarium.'),
+    ('LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS', 'zh_Hans_CN', '拥有动物园或水族馆的城市+1 [ICON_Amenities] 宜居度。'),
     ('LOC_CITY_STATES_TYPE_ENTERTAINMENT', 'en_US', 'Entertainment'),
     ('LOC_CITY_STATES_TYPE_ENTERTAINMENT', 'zh_Hans_CN', '娱乐');
+
+-- 6 使者档挂了两条 modifier，各自需要一句 Preview 文本。
+INSERT OR REPLACE INTO LocalizedText (Tag, Language, Text) VALUES
+    ('LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS_TIER3', 'en_US', 'Additional +1 [ICON_Amenities] Amenity in each city with a Stadium or Aquatics Center.'),
+    ('LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS_TIER3', 'zh_Hans_CN', '拥有体育场或水上运动中心的城市额外+1 [ICON_Amenities] 宜居度。');

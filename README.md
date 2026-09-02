@@ -70,9 +70,23 @@ function GetTypeAtlasPieces(kCityState, size) ... end
 在数据库里却是 `"CULTURAL"`），而是反过来：**凡是官方六种之外的类型一律当成
 本 mod 的娱乐城邦**。本 mod 只引入一个新类别，这样既安全又不受映射规则影响。
 
-> **已知限制**：与其它替换 `CityStates` 这个 LuaContext 的 mod（如 CIVITAS
-> City-States）同时开启时，LoadOrder 大的那个赢。本 mod 用了 100000 并配了
-> `ImportFiles`，对方若也按约定写就能接力。
+关键的一环是 `GetCityStateType()`：它逐个比对六个 `LEADER_MINOR_CIV_*`，
+我们的城邦一个都匹配不上，返回**空串**，后面所有查表都从这里开始崩。先补它，
+再补四个查表函数。
+
+> **已知限制 / 与 Better City States 冲突**：装了 Better City States 时，
+> 它的 CUI 城邦列表里有这么一行——
+> `cui_SuzerainList[kCityState.Type].color = ...`，那张表是函数内的 local，
+> 只有六个官方键，遇到第七个类别会 `attempt to index a nil value`，
+> **整个城邦面板白屏**。表在外部改不到，除非把它那个函数整个重写。
+> 所以 `UI/CityStates_TSODDreamCity.lua` 顶部留了一个开关：
+> 把 `TSOD_ENTERTAINMENT_TYPE` 改成 `"CULTURE"`，娱乐城邦对 UI 伪装成文化城邦，
+> 图标颜色类别名都变回文化，但**加成不受影响**（加成来自 trait，不看这个字符串）。
+> 这是目前唯一能同时开着 BST 又不白屏的办法。
+>
+> 与其它替换 `CityStates` 这个 LuaContext 的 mod 同开时，LoadOrder 大的那个赢。
+> 本 mod 用了 100000 并配了 `ImportFiles`，也 include 了 BST 的两个资料片文件，
+> 对方若也按约定写就能接力。
 > 另外 CIVITAS City-States 自己也做了一个娱乐城邦类别
 > （`MINOR_CIV_CSE_ENTERTAINMENT_TRAIT`），和本 mod 的是两个互不相干的类别，
 > 同开时会并存。
@@ -103,6 +117,15 @@ function GetTypeAtlasPieces(kCityState, size) ... end
 唯一自建的是一个只包 `REQUIRES_DISTRICT_IS_ENTERTAINMENT_COMPLEX` 的
 RequirementSet（官方只有 `..._INDUSTRIAL_ZONE_OR_ENTERTAINMENT_COMPLEX`）。
 注意巴西的街头狂欢节是另一个区域类型，不在此列。
+
+### 界面上的类别名与使者说明
+
+风云变幻新增了 `MinorCivBonuses` 与 `Leaders_XP2` 两张表，城邦面板从这里取
+「这个城邦属于哪一类」。新类别不登记进去，界面上那一栏就是空的。
+
+「派遣 N 位使者：」后面那半句走 `ModifierStrings` 的 `Preview` 上下文。
+官方六个类别的说明是引擎内置的、不经这张表，新加的类别必须自己写，
+否则 tooltip 里只剩前半句。CIVITAS City-States 也是这么补的。
 
 ### 配色
 
