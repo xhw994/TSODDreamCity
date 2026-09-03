@@ -5,7 +5,7 @@ skill 的发布清单要求封面至少 512×512；这里出 1024×1024，和塞
 缩略图缩下去更干净。蜘蛛用城邦那套琥珀金（245,190,55，和 PlayerColors 里同一个值），
 背后压一层很淡的蛛网，呼应「叙事者神经网络」。
 
-标题牌照着 PS 里那套图层样式复刻，不追求参数一一对应，看着是那么回事就行：
+顶上一行英文小字，下面一块标题牌。牌子照着 PS 里那套图层样式复刻，不追求参数一一对应，看着是那么回事就行：
 
     投影    正片叠底 50%，角度 30°，距离 5px，大小 38px
             -> 一层偏移后高斯模糊的黑，压在牌子底下
@@ -43,6 +43,13 @@ WEB_CENTER    = SPIDER_CENTER
 WEB_RINGS     = 6
 WEB_SPOKES    = 12
 WEB_MAX_R     = 560
+
+# ---- 顶部小标题 ------------------------------------------------------------
+TOP_TITLE       = "The Sword of Dawn"            # 置空则不画
+TOP_TITLE_FONT  = r"C:\Windows\Fonts\segoeuil.ttf"   # Segoe UI Light
+TOP_TITLE_SIZE  = 32
+TOP_TITLE_TRACK = 0.50       # em 为单位；PS 字符面板里的字距填 500
+TOP_TITLE_TOP   = 24         # 字形顶端离画布顶端的像素数
 
 # ---- 标题牌 ----------------------------------------------------------------
 PLATE_ENABLED = True
@@ -144,7 +151,8 @@ def draw_plate(img):
     return img
 
 
-def draw_tracked(d, center_x, mid_y, text, font, tracking_em):
+def draw_tracked(d, center_x, mid_y, text, font, tracking_em,
+                 fill=AMBER, stroke=1, top_y=None):
     """按字距逐字排，并按墨迹包围盒把整行垂直居中。
 
     字距是加在每个字后面的，末尾会多出一份空档，所以整行要右移半格才是视觉居中。
@@ -153,13 +161,22 @@ def draw_tracked(d, center_x, mid_y, text, font, tracking_em):
     widths = [d.textlength(ch, font=font) for ch in text]
     total  = sum(widths) + extra * (len(text) - 1)
     ink    = d.textbbox((0, 0), text, font=font)
-    y      = mid_y - (ink[1] + ink[3]) / 2.0
+    # top_y 给的是「字形顶端」，mid_y 给的是「视觉中线」，二选一
+    y      = (top_y - ink[1]) if top_y is not None else (mid_y - (ink[1] + ink[3]) / 2.0)
     x      = center_x - total / 2.0 + extra / 2.0
     for ch, w in zip(text, widths):
-        d.text((x, y), ch, font=font, fill=AMBER,
-               stroke_width=1, stroke_fill=AMBER)   # 同色描边 = 笔画稍微加粗
+        d.text((x, y), ch, font=font, fill=fill,
+               stroke_width=stroke, stroke_fill=fill)  # 同色描边 = 笔画稍微加粗
         x += w + extra
     return total
+
+
+def draw_top_title(img):
+    d = ImageDraw.Draw(img)
+    f = ImageFont.truetype(TOP_TITLE_FONT, TOP_TITLE_SIZE)
+    draw_tracked(d, img.width // 2, None, TOP_TITLE, f, TOP_TITLE_TRACK,
+                 fill=(255, 255, 255), stroke=0, top_y=TOP_TITLE_TOP)
+    return img
 
 
 def draw_titles(img):
@@ -192,6 +209,8 @@ def main():
     out.alpha_composite(tinted, (gx, gy))
     out = out.convert("RGB")
 
+    if TOP_TITLE:
+        out = draw_top_title(out)
     if PLATE_ENABLED:
         out = draw_titles(draw_plate(out))
 
