@@ -9,7 +9,7 @@
 
 派遣使者（类别加成）：
 
-- 1 位使者：[ICON_Capital] 首都和每座**竞技场**和**摩天轮** +1 [ICON_Amenities] 宜居度
+- 1 位使者：[ICON_Capital] 首都、每座**竞技场**和**摩天轮** +1 [ICON_Amenities] 宜居度
 - 3 位使者：每座**动物园**和**水族馆** +1 [ICON_Amenities] 宜居度
 - 6 位使者：每座**体育场**和**水上运动中心** +1 [ICON_Amenities] 宜居度
 
