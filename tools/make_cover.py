@@ -1,20 +1,29 @@
 # -*- coding: utf-8 -*-
-"""生成创意工坊封面：深色底 + 琥珀金的上层叙事者 + 顶部标题。
+"""生成创意工坊封面：深色底 + 琥珀金的上层叙事者 + 下方标题牌。
 
 skill 的发布清单要求封面至少 512×512；这里出 1024×1024，和塞西尔帝国那张一致，
 缩略图缩下去更干净。蜘蛛用城邦那套琥珀金（245,190,55，和 PlayerColors 里同一个值），
 背后压一层很淡的蛛网，呼应「叙事者神经网络」。
 
-标题贴顶排，蜘蛛随之落到画面正中，构图才不会头重脚轻。
-字距是加在每个字母**后面**的，末尾会多出一份空档，所以整行还要右移半个字距
-才是视觉居中——直接按总宽居中会偏左。
-把 TITLE_TEXT 置空就出一张不带字的底图。
+标题牌照着 PS 里那套图层样式复刻，不追求参数一一对应，看着是那么回事就行：
+
+    投影    正片叠底 50%，角度 30°，距离 5px，大小 38px
+            -> 一层偏移后高斯模糊的黑，压在牌子底下
+    外发光  滤色 50%，黄色，扩展 20%，大小 6px
+            -> 把牌子形状往外扩几像素再模糊，以「取较亮者」的方式叠上去
+    描边    3px 内部，琥珀金
+            -> 直接画在矩形边上
+    文字描边
+            -> PIL 的 stroke_width，同色描边等于把笔画稍微加粗一点
+
+中文用楷体、英文用 Candara，跟 PS 里选的一致。
+把 PLATE_ENABLED 关掉就出一张干净的底图。
 """
 import math
 import os
 import sys
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import make_icon  # noqa: E402  —— 复用同一只蜘蛛，不另画一份
@@ -28,18 +37,38 @@ BG_CENTER  = (26, 30, 46)
 BG_EDGE    = (8, 10, 16)
 WEB_COLOR  = (74, 80, 108)
 
-SPIDER_SIZE   = 620          # 蜘蛛边长
-SPIDER_CENTER = (SIZE // 2, SIZE // 2 + 20)   # 正中略偏下，给顶部标题让位
+SPIDER_SIZE   = 620
+SPIDER_CENTER = (SIZE // 2, 410)   # 偏上，把下半张留给标题牌
 WEB_CENTER    = SPIDER_CENTER
 WEB_RINGS     = 6
 WEB_SPOKES    = 12
 WEB_MAX_R     = 560
 
-TITLE_TEXT  = "The Sword of Dawn"          # 置空则不画标题
-TITLE_FONT  = r"C:\Windows\Fonts\segoeuil.ttf"   # Segoe UI Light
-TITLE_SIZE  = 46
-TITLE_TRACK = 0.50           # em 为单位；PS 字符面板里的字距填 500
-TITLE_TOP   = 12             # 字形顶端离画布顶端的像素数
+# ---- 标题牌 ----------------------------------------------------------------
+PLATE_ENABLED = True
+PLATE_BOX     = (52, 676, 972, 984)      # left, top, right, bottom
+PLATE_FILL    = (9, 9, 11)
+PLATE_STROKE  = 3
+
+GLOW_SPREAD = 5      # 外发光「扩展」：形状先往外胀这么多像素
+GLOW_BLUR   = 7      # 外发光「大小」
+GLOW_ALPHA  = 0.50
+
+SHADOW_ANGLE = 30    # PS 的光源角度，阴影落在反方向
+SHADOW_DIST  = 5
+SHADOW_BLUR  = 19    # PS 的「大小 38」约等于这个半径
+SHADOW_ALPHA = 0.50
+
+TEXT_CN      = "黎明之剑：梦境之城"
+TEXT_EN      = "TSOD: Dream City"
+FONT_CN      = r"C:\Windows\Fonts\simkai.ttf"    # 楷体
+FONT_EN      = r"C:\Windows\Fonts\Candara.ttf"
+SIZE_CN      = 76
+SIZE_EN      = 68
+BASELINE_CN  = 762      # 两行文字各自的视觉中线
+BASELINE_EN  = 906
+TRACK_CN     = 0.06     # 楷体挤在一起不好看，稍微松一点
+TRACK_EN     = 0.02
 
 
 def radial_background():
@@ -80,22 +109,66 @@ def draw_web(img):
     return img
 
 
-def draw_title(img):
+def _plate_mask(spread=0, offset=(0, 0)):
+    """标题牌的形状。spread 让它往外胀，offset 让它整体位移。"""
+    m = Image.new("L", (SIZE, SIZE), 0)
+    d = ImageDraw.Draw(m)
+    l, t, r, b = PLATE_BOX
+    d.rectangle((l - spread + offset[0], t - spread + offset[1],
+                 r + spread + offset[0], b + spread + offset[1]), fill=255)
+    return m
+
+
+def draw_plate(img):
+    """投影 -> 外发光 -> 牌面 -> 描边，顺序和 PS 图层样式一致。"""
+    # 投影：正片叠底就是往下压暗，这里直接按 mask 把底图往黑里插值
+    rad = math.radians(SHADOW_ANGLE)
+    off = (int(round(-SHADOW_DIST * math.cos(rad))),
+           int(round(SHADOW_DIST * math.sin(rad))))
+    shadow = _plate_mask(spread=2, offset=off).filter(ImageFilter.GaussianBlur(SHADOW_BLUR))
+    shadow = shadow.point(lambda v: int(v * SHADOW_ALPHA))
+    img = Image.composite(Image.new("RGB", img.size, (0, 0, 0)), img, shadow)
+
+    # 外发光：滤色 = 取较亮者，用胀开后模糊的形状当强度
+    glow_mask = _plate_mask(spread=GLOW_SPREAD).filter(ImageFilter.GaussianBlur(GLOW_BLUR))
+    glow_mask = glow_mask.point(lambda v: int(v * GLOW_ALPHA))
+    glow = Image.new("RGB", img.size, AMBER)
+    glow.putalpha(glow_mask)
+    img = ImageChops.lighter(img, Image.composite(glow.convert("RGB"),
+                                                  Image.new("RGB", img.size, (0, 0, 0)),
+                                                  glow_mask))
+
+    # 牌面与描边
     d = ImageDraw.Draw(img)
-    f = ImageFont.truetype(TITLE_FONT, TITLE_SIZE)
-    # 按墨迹包围盒定位，字形顶端才会正好落在 TITLE_TOP，
-    # 而不是差着字体自带的那点 ascender 空隙。
-    ink = d.textbbox((0, 0), TITLE_TEXT, font=f)
-    y = TITLE_TOP - ink[1]
+    d.rectangle(PLATE_BOX, fill=PLATE_FILL, outline=AMBER, width=PLATE_STROKE)
+    return img
 
-    extra  = TITLE_SIZE * TITLE_TRACK
-    widths = [d.textlength(ch, font=f) for ch in TITLE_TEXT]
-    total  = sum(widths) + extra * (len(TITLE_TEXT) - 1)
-    x = (img.width - total) / 2.0 + extra / 2.0   # 补末尾多出的半个字距
 
-    for ch, w in zip(TITLE_TEXT, widths):
-        d.text((x, y), ch, font=f, fill=(255, 255, 255))
+def draw_tracked(d, center_x, mid_y, text, font, tracking_em):
+    """按字距逐字排，并按墨迹包围盒把整行垂直居中。
+
+    字距是加在每个字后面的，末尾会多出一份空档，所以整行要右移半格才是视觉居中。
+    """
+    extra  = font.size * tracking_em
+    widths = [d.textlength(ch, font=font) for ch in text]
+    total  = sum(widths) + extra * (len(text) - 1)
+    ink    = d.textbbox((0, 0), text, font=font)
+    y      = mid_y - (ink[1] + ink[3]) / 2.0
+    x      = center_x - total / 2.0 + extra / 2.0
+    for ch, w in zip(text, widths):
+        d.text((x, y), ch, font=font, fill=AMBER,
+               stroke_width=1, stroke_fill=AMBER)   # 同色描边 = 笔画稍微加粗
         x += w + extra
+    return total
+
+
+def draw_titles(img):
+    d = ImageDraw.Draw(img)
+    cx = (PLATE_BOX[0] + PLATE_BOX[2]) // 2
+    draw_tracked(d, cx, BASELINE_CN, TEXT_CN,
+                 ImageFont.truetype(FONT_CN, SIZE_CN), TRACK_CN)
+    draw_tracked(d, cx, BASELINE_EN, TEXT_EN,
+                 ImageFont.truetype(FONT_EN, SIZE_EN), TRACK_EN)
     return img
 
 
@@ -118,8 +191,10 @@ def main():
     out = Image.alpha_composite(img.convert("RGBA"), glow)
     out.alpha_composite(tinted, (gx, gy))
     out = out.convert("RGB")
-    if TITLE_TEXT:
-        draw_title(out)
+
+    if PLATE_ENABLED:
+        out = draw_titles(draw_plate(out))
+
     out.save(OUT, "JPEG", quality=94, subsampling=0)
     print("wrote %s (%dx%d)" % (OUT, SIZE, SIZE))
 
