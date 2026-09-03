@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
-"""生成创意工坊封面：深色底 + 琥珀金的上层叙事者。
+"""生成创意工坊封面：深色底 + 琥珀金的上层叙事者 + 顶部标题。
 
 skill 的发布清单要求封面至少 512×512；这里出 1024×1024，和塞西尔帝国那张一致，
 缩略图缩下去更干净。蜘蛛用城邦那套琥珀金（245,190,55，和 PlayerColors 里同一个值），
 背后压一层很淡的蛛网，呼应「叙事者神经网络」。
 
-下方约四分之一刻意留空，方便自己用 PS 往上压标题。
+标题贴顶排，蜘蛛随之落到画面正中，构图才不会头重脚轻。
+字距是加在每个字母**后面**的，末尾会多出一份空档，所以整行还要右移半个字距
+才是视觉居中——直接按总宽居中会偏左。
+把 TITLE_TEXT 置空就出一张不带字的底图。
 """
 import math
 import os
 import sys
 
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import make_icon  # noqa: E402  —— 复用同一只蜘蛛，不另画一份
@@ -26,11 +29,17 @@ BG_EDGE    = (8, 10, 16)
 WEB_COLOR  = (74, 80, 108)
 
 SPIDER_SIZE   = 620          # 蜘蛛边长
-SPIDER_CENTER = (SIZE // 2, 430)   # 偏上，给标题留地方
+SPIDER_CENTER = (SIZE // 2, SIZE // 2 + 20)   # 正中略偏下，给顶部标题让位
 WEB_CENTER    = SPIDER_CENTER
 WEB_RINGS     = 6
 WEB_SPOKES    = 12
 WEB_MAX_R     = 560
+
+TITLE_TEXT  = "The Sword of Dawn"          # 置空则不画标题
+TITLE_FONT  = r"C:\Windows\Fonts\segoeuil.ttf"   # Segoe UI Light
+TITLE_SIZE  = 46
+TITLE_TRACK = 0.50           # em 为单位；PS 字符面板里的字距填 500
+TITLE_TOP   = 12             # 字形顶端离画布顶端的像素数
 
 
 def radial_background():
@@ -71,6 +80,25 @@ def draw_web(img):
     return img
 
 
+def draw_title(img):
+    d = ImageDraw.Draw(img)
+    f = ImageFont.truetype(TITLE_FONT, TITLE_SIZE)
+    # 按墨迹包围盒定位，字形顶端才会正好落在 TITLE_TOP，
+    # 而不是差着字体自带的那点 ascender 空隙。
+    ink = d.textbbox((0, 0), TITLE_TEXT, font=f)
+    y = TITLE_TOP - ink[1]
+
+    extra  = TITLE_SIZE * TITLE_TRACK
+    widths = [d.textlength(ch, font=f) for ch in TITLE_TEXT]
+    total  = sum(widths) + extra * (len(TITLE_TEXT) - 1)
+    x = (img.width - total) / 2.0 + extra / 2.0   # 补末尾多出的半个字距
+
+    for ch, w in zip(TITLE_TEXT, widths):
+        d.text((x, y), ch, font=f, fill=(255, 255, 255))
+        x += w + extra
+    return img
+
+
 def main():
     img = draw_web(radial_background())
 
@@ -89,7 +117,10 @@ def main():
 
     out = Image.alpha_composite(img.convert("RGBA"), glow)
     out.alpha_composite(tinted, (gx, gy))
-    out.convert("RGB").save(OUT, "JPEG", quality=94, subsampling=0)
+    out = out.convert("RGB")
+    if TITLE_TEXT:
+        draw_title(out)
+    out.save(OUT, "JPEG", quality=94, subsampling=0)
     print("wrote %s (%dx%d)" % (OUT, SIZE, SIZE))
 
 
