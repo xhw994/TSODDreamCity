@@ -143,6 +143,33 @@ RequirementSet（官方只有 `..._INDUSTRIAL_ZONE_OR_ENTERTAINMENT_COMPLEX`）�
 印尼场景的海事城邦也是照这个加了一行 `PageGroupId="MARITIME"`。
 不加的话页面无处可归，会裸露在所有分组外面。一行 SQL，不用碰 Lua。
 
+### 兼容 CIVITAS City-States
+
+装了 CIVITAS 时，文明百科的城邦页由它的 `CivilopediaPage_CityState.lua` 接管，
+而它把官方那张硬编码的类别表**改成了数据库驱动**——正好对上官方自己留的那句
+`-- Should be database-driven, but presently is not.`：
+
+```lua
+for row in GameInfo.CSE_ClassTypes() do
+    tCityStateTypes[row.Type] = { TypeName=…, LeaderType=…, TypeIcon=… }
+end
+for k, v in pairs(tCityStateTypes) do
+    types[v.LeaderType] = { v.TypeIcon, v.TypeName, v.SecondaryColor }
+end
+```
+
+它按 `LeaderType` 重新索引再跟城邦的领袖继承链比对，所以往 `CSE_ClassTypes`
+插一行、`LeaderType` 填我们的类别领袖，百科页就认得了——不用替换任何 UI 文件，
+也不跟它抢 LuaContext。见 `Data/DreamCity_Compat_CIVITAS.sql`，由 `.modinfo` 的
+`ModInUse` criteria 控制，只在 CIVITAS 启用时加载（否则那张表根本不存在）。
+`LoadOrder` 需大于 20，这是 CIVITAS 在 `Core/CSE_ModSupport_Guide.sql` 里写的要求。
+
+> 顺带：CIVITAS 自己也有一个娱乐城邦类别 `CSE_ENTERTAINMENT`，而且它那份
+> ModSupport 指南给的接入方式是把你的城邦 `InheritFrom` 直接改挂到
+> `LEADER_MINOR_CIV_CSE_ENTERTAINMENT` 上。那样融合得更彻底（颜色、图标、百科全走它的），
+> 但城邦的三档加成也会跟着换成它的四档设计，本 mod 自己写的那套就不生效了。
+> 这里选的是保留自己的类别与加成，只借它的百科页认一下。
+
 ### 配色
 
 娱乐是新类别，官方没有对应的 `COLOR_PLAYER_CITY_STATE_*`。之前借用文化城邦的
@@ -171,6 +198,7 @@ Data/DreamCity_Modifiers.sql          宗主国能力
 Data/DreamCity_Colors.sql             配色（琥珀金，自定义）
 Data/DreamCity_Config.sql             开局设置里的开关
 Data/DreamCity_Picker.sql             城邦挑选界面的条目
+Data/DreamCity_Compat_CIVITAS.sql     CIVITAS City-States 兼容（仅在它启用时加载）
 Data/DreamCity_Icons.xml              图标登记（13 个尺寸）
 Text/DreamCity_Text.sql               中英文
 UI/CityStates_TSODDreamCity.lua       城邦面板：让新类别有图标和名字

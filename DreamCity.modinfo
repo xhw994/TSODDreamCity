@@ -16,6 +16,9 @@
     <Criteria id="Expansion2">
       <GameCoreInUse>Expansion2</GameCoreInUse>
     </Criteria>
+    <Criteria id="CivitasCityStates">
+      <ModInUse>7d0b57ba-6a5c-4de0-ac10-e1e464ac82f6</ModInUse>
+    </Criteria>
   </ActionCriteria>
 
   <FrontEndActions>
@@ -121,6 +124,14 @@
       </Properties>
       <Criteria>Expansion2</Criteria>
     </ReplaceUIScript>
+    <!-- 装了 CIVITAS City-States 时，往它的 CSE_ClassTypes 插一行，
+         它的文明百科页就认得娱乐类别了。表不存在时整个 action 不加载。 -->
+    <UpdateDatabase id="DreamCity_IG_CivitasCompat">
+      <Properties><LoadOrder>100</LoadOrder></Properties>
+      <Criteria>Expansion2</Criteria>
+      <Criteria>CivitasCityStates</Criteria>
+      <File>Data/DreamCity_Compat_CIVITAS.sql</File>
+    </UpdateDatabase>
   </InGameActions>
 
   <LocalizedText>
@@ -161,5 +172,6 @@
     <File>Textures/ICON_CIVILIZATION_TSOD_DREAM_CITY_256.dds</File>
     <File>UI/CityStates_TSODDreamCity.lua</File>
     <File>Data/DreamCity_CityStateCategory.sql</File>
+    <File>Data/DreamCity_Compat_CIVITAS.sql</File>
   </Files>
 </Mod>
