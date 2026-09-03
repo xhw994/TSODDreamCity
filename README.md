@@ -206,6 +206,9 @@ Text/DreamCity_Text.sql               中英文
 UI/CityStates_TSODDreamCity.lua       城邦面板：让新类别有图标和名字
 Textures/*.dds                        图标本体
 tools/make_icon.py                    重新生成图标
+tools/make_cover.py                   重新生成创意工坊封面
+DreamCity.jpg                         创意工坊封面（1024×1024，下方留白待加标题）
+WORKSHOP_CN.md / WORKSHOP_EN.md       创意工坊简介（Steam BBCode）
 ```
 
 ## 部署
