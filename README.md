@@ -9,9 +9,9 @@
 
 派遣使者（类别加成）：
 
-- 1 位使者：[ICON_Capital] 首都 +1 [ICON_Amenities] 宜居度
-- 3 位使者：拥有**竞技场**或**摩天轮**的城市 +1 [ICON_Amenities] 宜居度
-- 6 位使者：拥有**动物园**或**水族馆**的城市 +1；拥有**体育场**或**水上运动中心**的城市再 +1
+- 1 位使者：[ICON_Capital] 首都和每座**竞技场**、**摩天轮** +1 [ICON_Amenities] 宜居度
+- 3 位使者：每座**动物园**、**水族馆** +1 [ICON_Amenities] 宜居度
+- 6 位使者：每座**体育场**、**水上运动中心** +1 [ICON_Amenities] 宜居度
 
 作为宗主国（城邦独有能力「叙事者神经网络」）：
 
@@ -34,14 +34,16 @@ trait 上，具体城邦再 `InheritFrom` 类别领袖。`CityStateCategory` 只
 （`Expansion1_RemoveData.xml` 删、`Expansion1_Leaders.xml` 重建），
 风云变幻沿用这一版。以文化城邦为例，资料片版是：
 
-| 档位 | 官方文化城邦（资料片） |
-|---|---|
-| 3 使者 | `BUILDING_AMPHITHEATER` +2 文化 |
-| 6 使者 | `BUILDING_MUSEUM_ART` +2、`BUILDING_MUSEUM_ARTIFACT` +2（LARGE 挂两条） |
+| 档位 | 官方文化城邦（资料片） | 本 mod |
+|---|---|---|
+| 1 使者 | 首都 + `BUILDING_AMPHITHEATER`（一级） | 首都 + 竞技场 / 摩天轮 |
+| 3 使者 | 二级建筑 | 动物园 / 水族馆 |
+| 6 使者 | `BUILDING_MUSEUM_ART` / `_ARTIFACT`（三级，挂两条） | 体育场 / 水上运动中心 |
 
-所以这里也按建筑分档，并把娱乐中心与水上乐园的**同级建筑合并在同一档**里，
-用 `REQUIREMENTSET_TEST_ANY` 判定。6 使者挂两条（二级一条、三级一条），
-和官方文化城邦 LARGE 挂两条同形。数值取 1 而不是官方的 2 —— 一点宜居度比两点产出贵得多。
+**建筑等级跟着使者档位走**。1 使者那档挂两条 modifier（首都一条、一级建筑一条），
+和官方「首都和每座古罗马剧场」是一个写法。娱乐中心与水上乐园的同级建筑合并在
+同一档，用 `REQUIREMENTSET_TEST_ANY` 判定。数值取 1 而不是官方的 2 ——
+一点宜居度比两点产出贵得多。
 
 宜居度用 `EFFECT_ADJUST_CITY_AMENITIES_FROM_CITY_STATES`，它会正确归类成
 「来自城邦的宜居度」，比拿区域级的 `EFFECT_ADJUST_DISTRICT_AMENITY` 绕三层干净。

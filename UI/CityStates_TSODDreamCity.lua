@@ -49,15 +49,15 @@ local TSOD_CATEGORY_LEADER :string = "LEADER_MINOR_CIV_ENTERTAINMENT";
 
 -- 三档说明。官方那三个门槛常量在原文件里是 local，include 拿不到，
 -- 只能按传进来的数字判；官方从来只用 1 / 3 / 6 这三个值。
--- 6 使者那档挂了两条 modifier，所以是两句拼起来。
+-- 每档一句：1 使者那档虽然挂了两条 modifier（首都、一级建筑），
+-- 但说明是一句话讲完的，跟官方「首都和每座古罗马剧场」一个写法。
 local TSOD_TIER_TEXT :table = {
     [1] = { "LOC_MINOR_CIV_SMALL_INFLUENCE_ENVOYS",
             { "LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_SMALL_INFLUENCE_BONUS" } },
     [3] = { "LOC_MINOR_CIV_MEDIUM_INFLUENCE_ENVOYS",
             { "LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_MEDIUM_INFLUENCE_BONUS" } },
     [6] = { "LOC_MINOR_CIV_LARGE_INFLUENCE_ENVOYS",
-            { "LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS",
-              "LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS_TIER3" } },
+            { "LOC_MINOR_CIV_ENTERTAINMENT_TRAIT_LARGE_INFLUENCE_BONUS" } },
 };
 
 
