@@ -140,12 +140,12 @@
       <zh_Hans_CN>《黎明之剑》梦境之城</zh_Hans_CN>
     </Text>
     <Text id="LOC_TSOD_DREAM_CITY_MOD_TEASER">
-      <en_US>A cultural city-state watched over by the High Narrator, from the web novel The Sword of Dawn.</en_US>
-      <zh_Hans_CN>来自网络小说《黎明之剑》、由上层叙事者看顾的文化城邦。</zh_Hans_CN>
+      <en_US>An entertainment city-state watched over by the High Narrator, from the web novel The Sword of Dawn.</en_US>
+      <zh_Hans_CN>来自网络小说《黎明之剑》、由上层叙事者看顾的娱乐城邦。</zh_Hans_CN>
     </Text>
     <Text id="LOC_TSOD_DREAM_CITY_MOD_DESCRIPTION">
-      <en_US>Adds Dream City, a cultural city-state from the online novel "The Sword of Dawn".[NEWLINE][NEWLINE]As its suzerain: [ICON_TechBoosted] Eurekas and [ICON_CivicBoosted] Inspirations provide an additional 10% of technology and civic costs. Each district in your cities provides +1 [ICON_Amenities] Amenity.[NEWLINE][NEWLINE]Requires the Gathering Storm ruleset.</en_US>
-      <zh_Hans_CN>添加了来自网络小说《黎明之剑》的文化城邦「梦境之城」。[NEWLINE][NEWLINE]作为宗主国：[ICON_TechBoosted]尤里卡和 [ICON_CivicBoosted]鼓舞额外提供10%的科技与市政开销。你的城市中每个区域+1 [ICON_Amenities] 宜居度。[NEWLINE][NEWLINE]需要《风云变幻》规则集。</zh_Hans_CN>
+      <en_US>Adds Dream City, an entertainment city-state from the online novel "The Sword of Dawn".[NEWLINE][NEWLINE]Requires the Gathering Storm ruleset.</en_US>
+      <zh_Hans_CN>添加了来自网络小说《黎明之剑》的娱乐城邦「梦境之城」。[NEWLINE][NEWLINE]需要《风云变幻》规则集。</zh_Hans_CN>
     </Text>
   </LocalizedText>
 
