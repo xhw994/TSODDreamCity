@@ -4,7 +4,7 @@
 [hr][/hr]
 [code]
 [h1]City-State: Dream City[/h1]
-[h2]Category: Entertainment (added by this mod)[/h2]
+[h2]Category: Entertainment[/h2]
 Tier 1: +1 Amenity in the Capital and in every Arena and Ferris Wheel.
 Tier 2: +1 Amenity in every Zoo and Aquarium.
 Tier 3: +1 Amenity in every Stadium and Aquatics Center.
