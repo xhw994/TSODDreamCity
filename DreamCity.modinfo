@@ -136,8 +136,8 @@
 
   <LocalizedText>
     <Text id="LOC_TSOD_DREAM_CITY_MOD_TITLE">
-      <en_US>[The Sword of Dawn (TSOD)] Dream City</en_US>
-      <zh_Hans_CN>《黎明之剑》梦境之城</zh_Hans_CN>
+      <en_US>TSOD: Dream City</en_US>
+      <zh_Hans_CN>黎明之剑：梦境之城</zh_Hans_CN>
     </Text>
     <Text id="LOC_TSOD_DREAM_CITY_MOD_TEASER">
       <en_US>An entertainment city-state watched over by the High Narrator, from the web novel The Sword of Dawn.</en_US>

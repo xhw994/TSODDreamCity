@@ -1,0 +1,9 @@
+# Python 生成物
+__pycache__/
+*.pyc
+
+# 生成图标/封面时的中间预览图，不是交付物
+tools/preview_*.png
+
+# 随手截的图，不进仓库
+Screenshot*.png
