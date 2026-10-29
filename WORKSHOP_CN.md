@@ -24,4 +24,4 @@
 
 [hr][/hr]
 [h1]致谢[/h1]
-感谢 Hemmelfort 的教程与工具、CIVITAS City-States 把类别表改成数据库驱动并留出了接入点、以及「鸣潮：团子城邦」提供的城邦工程范例。
+感谢 Hemmelfort 的教程与工具、CIVITAS City-States 把类别表改成数据库驱动并留出了接入点、以及「鸣潮：团子城邦」提供的城邦工程范例。感谢 Claude Opus 5.5 和 Sonnet 5.5。

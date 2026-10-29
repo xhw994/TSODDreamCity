@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Mod id="3b138c5a-bb00-42ce-9ae2-2186fbd5595b" version="1">
+<Mod id="3b138c5a-bb00-42ce-9ae2-2186fbd5595b" version="2">
   <Properties>
     <Name>LOC_TSOD_DREAM_CITY_MOD_TITLE</Name>
     <Teaser>LOC_TSOD_DREAM_CITY_MOD_TEASER</Teaser>
     <Description>LOC_TSOD_DREAM_CITY_MOD_DESCRIPTION</Description>
     <Authors>Brus Gwyn Fuchkyo</Authors>
+    <Homepage>https://steamcommunity.com/sharedfiles/filedetails/?id=3795364293</Homepage>
     <CompatibleVersions>2.0</CompatibleVersions>
   </Properties>
 
