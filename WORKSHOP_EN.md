@@ -1,5 +1,6 @@
 [h1]↑ If you enjoy this mod, a thumbs up means a lot to me[/h1]
 [b]This mod adds Dream City, a city-state from the web novel The Sword of Dawn, along with a brand new city-state category: Entertainment.[/b]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3829784925]The Sword of Dawn series collection: subscribe to all the MODs at once (Cecil Empire, Typhon Empire, Dream City)[/url]
 
 [hr][/hr]
 [code]

@@ -14,7 +14,7 @@ Dream City is a city in the novel's sandbox, watched over by the High Narrator, 
 
 In the game it is an **Entertainment city-state**, the seventh category after Cultural, Industrial, Militaristic, Religious, Scientific and Trade. Its envoy bonuses reward Entertainment Complexes and Water Parks with amenities, and its suzerain bonus speeds up research and civics.
 
-It is one of the mods in the *Sword of Dawn* series, alongside the Cecil Empire and Typhon Empire mods, and works on its own.
+It is one of the mods in the *Sword of Dawn* series, alongside the Cecil Empire and Typhon Empire mods, and works on its own. The whole series is in the [Sword of Dawn series collection](https://steamcommunity.com/sharedfiles/filedetails/?id=3829784925) on the Steam Workshop: subscribe to all of the mods with one click.
 
 ---
 
