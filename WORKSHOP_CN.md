@@ -1,6 +1,6 @@
 [h1]↑如果喜欢本mod请帮我点点大拇指，这对我真的很重要[/h1]
 [b]本 MOD 添加了来自网络小说《黎明之剑》的城邦「梦境之城」，以及一个全新的城邦类别：娱乐城邦。[/b]
-[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3829784925]黎明之剑系列合集：一键订阅全部 MOD（塞西尔帝国、提丰帝国、梦境之城）[/url]
+[url=https://steamcommunity.com/workshop/filedetails/?id=3830009835]黎明之剑系列合集：一键订阅全部 MOD（塞西尔帝国、提丰帝国、梦境之城）[/url]
 
 [hr][/hr]
 [code]
